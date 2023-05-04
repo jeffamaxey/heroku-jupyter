@@ -16,9 +16,7 @@ try:
         c.NotebookApp.token = ''
         c.NotebookApp.password = ''
 
-    ### PostresContentsManager ###
-    database_url = os.getenv('DATABASE_URL', None)
-    if database_url:
+    if database_url := os.getenv('DATABASE_URL', None):
         # Tell IPython to use PostgresContentsManager for all storage.
         c.NotebookApp.contents_manager_class = pgcontents.PostgresContentsManager
 
@@ -33,16 +31,11 @@ try:
         # a username can be specified manually like so:
         c.PostgresContentsManager.user_id = 'heroku'
 
-        # Set a maximum file size, if desired.
-        #c.PostgresContentsManager.max_file_size_bytes = 1000000 # 1MB File cap
-
-    ### CloudFoundry specific settings
-    vcap_application_json = os.getenv('VCAP_APPLICATION', None)
-    if vcap_application_json:
+    if vcap_application_json := os.getenv('VCAP_APPLICATION', None):
         vcap_application = json.loads(vcap_application_json)
         uri = vcap_application['uris'][0]
-        c.NotebookApp.allow_origin = 'https://{}'.format(uri)
-        c.NotebookApp.websocket_url = 'wss://{}:4443'.format(uri)
+        c.NotebookApp.allow_origin = f'https://{uri}'
+        c.NotebookApp.websocket_url = f'wss://{uri}:4443'
 
 except Exception:
     traceback.print_exc()
